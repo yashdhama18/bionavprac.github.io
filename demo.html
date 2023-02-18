@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <title>Practical PDFs</title>
+  </head>
+  <body>
+    <h1>Practical PDFs</h1>
+    <table id="pdfs-table">
+      <thead>
+        <tr>
+          <th>Practical Name</th>
+          <th>Subject</th>
+          <th>Practical Image</th>
+          <th>Total Pages</th>
+          <th>Page Number</th>
+          <th>Download</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const airtableApiKey = 'keywsvNJRiEEDwCUJ';
+      const airtableBaseId = 'appN7UhKNrZR1dR2d';
+      const airtableTable = 'practical pdfs';
+
+      const tableBody = document.querySelector('#pdfs-table tbody');
+
+      axios.get(`https://api.airtable.com/v0/${airtableBaseId}/${airtableTable}?view=Grid%20view`, {
+        headers: { 'Authorization': `Bearer ${airtableApiKey}` }
+      })
+      .then(response => {
+        const records = response.data.records;
+        records.forEach(record => {
+          const fields = record.fields;
+          const row = document.createElement('tr');
+          const nameCell = document.createElement('td');
+          nameCell.innerText = fields['practical name'];
+          const subjectCell = document.createElement('td');
+          subjectCell.innerText = fields['subject'];
+          const imageCell = document.createElement('td');
+          const image = document.createElement('img');
+          image.src = fields['practical image'][0].thumbnails.large.url;
+          image.alt = fields['practical image'][0].filename;
+          image.width = 150;
+          image.height = 200;
+          imageCell.appendChild(image);
+          const totalPagesCell = document.createElement('td');
+          totalPagesCell.innerText = fields['Total Pages'];
+          const pageNumberCell = document.createElement('td');
+          pageNumberCell.innerText = fields['Page Number'];
+          const downloadCell = document.createElement('td');
+          const downloadLink = document.createElement('a');
+          downloadLink.href = fields['practical url'];
+          downloadLink.download = fields['practical name'];
+          downloadLink.innerText = 'Download';
+          downloadCell.appendChild(downloadLink);
+          row.appendChild(nameCell);
+          row.appendChild(subjectCell);
+          row.appendChild(imageCell);
+          row.appendChild(totalPagesCell);
+          row.appendChild(pageNumberCell);
+          row.appendChild(downloadCell);
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error(error));
+    </script>
+  </body>
+</html>
+<!DOCTYPE html>
